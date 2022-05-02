@@ -1,0 +1,17 @@
+.box{
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.btn {
+  width: 200px;
+  height: 40px;
+  background: rgb(156, 15, 221);
+  border-radius: 20px;
+  text-align: center;
+  line-height: 40px;
+  color: #fff;
+  cursor: pointer;
+  user-select: none;
+}
