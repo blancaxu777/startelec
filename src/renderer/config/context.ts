@@ -1,4 +1,5 @@
 import {createContext} from 'react'
-const StoreContext = createContext(null)
+import {Istate, Iaction, defaultState} from './reducer'
+const StoreContext = createContext<[Istate, React.Dispatch<Iaction>]|null>(null)
 
 export default StoreContext

@@ -1,6 +1,6 @@
 const {contextBridge, ipcRenderer} = require('electron')
-contextBridge.exposeInMainWorld('ipcRenderer', {
+contextBridge.exposeInMainWorld('electron', {
   sendmessage: function (...args) {
-    ipcRenderer.invoke('send', ...args)
+    ipcRenderer.invoke('change', ...args)
   },
 })

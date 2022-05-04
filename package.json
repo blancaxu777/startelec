@@ -1,27 +1,40 @@
 {
   "name": "startelec",
   "version": "1.0.0",
-  "main": "./src/main/main.js",
   "license": "MIT",
+  "main": "dist/main/main.js",
   "scripts": {
     "dev": "concurrently \"yarn dev:renderer\" \"wait-on http://localhost:8080 && yarn dev:main\"",
-    "dev:main": "npx electron .",
-    "dev:renderer": "npx webpack serve -c ./webpack/webpack.config.renderer.js"
+    "dev:main": "cross-env NODE_ENV=development electronmon -r ts-node/register/transpile-only ./src/main/main.ts",
+    "dev:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true npx webpack serve -c ./webpack/webpack.config.renderer.dev.js",
+    "build": "concurrently \"yarn build:main\" \"yarn build:renderer\"",
+    "build:main": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true npx webpack -c ./webpack/webpack.config.main.prod.js",
+    "build:renderer": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true npx webpack -c ./webpack/webpack.config.renderer.prod.js",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "postinstall": "electron-builder install-app-deps"
   },
   "devDependencies": {
     "@babel/core": "^7.17.10",
-    "@babel/plugin-transform-runtime": "^7.17.10",
     "@babel/preset-env": "^7.17.10",
     "@babel/preset-react": "^7.16.7",
     "@babel/preset-typescript": "^7.16.7",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.5",
     "@types/react": "^18.0.8",
     "@types/react-dom": "^18.0.3",
     "babel-loader": "^8.2.5",
     "concurrently": "^7.1.0",
+    "cross-env": "^7.0.3",
     "css-loader": "^6.7.1",
-    "electron": "^18.2.0",
+    "css-minimizer-webpack-plugin": "^3.4.1",
+    "electron": "18.2.0",
+    "electron-builder": "^23.0.3",
+    "electronmon": "^2.0.2",
     "html-webpack-plugin": "^5.5.0",
     "mini-css-extract-plugin": "^2.6.0",
+    "react-refresh": "^0.13.0",
+    "style-loader": "^3.3.1",
+    "ts-node": "^10.7.0",
     "typescript": "^4.6.4",
     "wait-on": "^6.0.1",
     "webpack": "^5.72.0",
@@ -32,5 +45,21 @@
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-router-dom": "^6.3.0"
+  },
+  "build": {
+    "productName": "startelec",
+    "icon": "build/icon.ico",
+    "appId": "org.se.Electron",
+    "win": {
+      "target": "nsis"
+    },
+    "directories": {
+      "output": "build"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "blanca777",
+      "repo": "startelec"
+    }
   }
 }

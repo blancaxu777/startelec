@@ -7,6 +7,7 @@ function createWindow({width = 500, height = 500, preload, loadURL, loadFile}) {
       preload: preload,
     },
   })
+
   loadURL ? win.loadURL(loadURL) : loadFile && win.loadFile(loadFile)
 }
 module.exports = createWindow

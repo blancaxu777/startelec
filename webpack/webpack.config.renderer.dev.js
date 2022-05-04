@@ -1,13 +1,13 @@
 const path = require('path')
 const htmlWebpackPlugin = require('html-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
+const {srcRendererPath, distRendererPath, distPath} = require('./webpack.paths')
 module.exports = {
-  entry: path.join(__dirname, '..', 'src', 'renderer', 'index.jsx'),
+  entry: path.join(srcRendererPath, 'index.jsx'),
   mode: 'development',
   output: {
     filename: '[name].[contenthash:8].js',
-    path: path.resolve(__dirname, '..', 'dist/renderer'),
+    path: distRendererPath,
     clean: true,
   },
   // node: {
@@ -15,21 +15,21 @@ module.exports = {
   //   __filename: false,
   //   __dirname: false,
   // },
-  // target: 'electron-renderer',
+  target: ['web', 'electron-renderer'],
   devtool: 'cheap-module-source-map',
   devServer: {
-    static: path.resolve(__dirname, '..', 'dist'),
+    static: distPath,
   },
   plugins: [
     new htmlWebpackPlugin({
+      env: process.env.NODE_ENV,
+      isBrowser: false,
       cache: true,
       inject: 'body',
       title: 'startElec',
-      template: path.resolve(__dirname, '..', 'src', 'renderer', 'index.html'),
+      template: path.resolve(srcRendererPath, 'index.html'),
     }),
-    new MiniCssExtractPlugin({
-      filename: 'styles/[contenthash:8].css',
-    }),
+    new ReactRefreshWebpackPlugin(),
   ],
   resolve: {
     alias: {},
@@ -38,14 +38,14 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(tsx|ts|jsx|js)$/,
+        test: /\.[jt]sx?$/,
         exclude: /node_modules/,
         use: [
           {
             loader: 'babel-loader',
             options: {
               presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'],
-              plugins: [['@babel/plugin-transform-runtime']],
+              plugins: [require.resolve('react-refresh/babel')],
             },
           },
         ],
@@ -54,7 +54,7 @@ module.exports = {
         test: /\.css$/,
         exclude: /node_modules/,
         use: [
-          MiniCssExtractPlugin.loader,
+          'style-loader',
           {
             loader: 'css-loader',
             options: {
@@ -62,6 +62,14 @@ module.exports = {
             },
           },
         ],
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf|otf)$/i,
+        type: 'asset/resource',
+      },
+      {
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: 'asset/resource',
       },
     ],
   },

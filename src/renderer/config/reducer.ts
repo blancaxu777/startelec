@@ -1,7 +1,7 @@
-interface Istate {
+export interface Istate {
   title: string
 }
-interface Iaction {
+export interface Iaction {
   type: string
   [key: string]: any
 }
