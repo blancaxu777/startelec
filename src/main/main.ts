@@ -1,11 +1,16 @@
-const {app, ipcMain} = require('electron')
+const {app, BrowserWindow, ipcMain} = require('electron')
 const path = require('path')
-const createWindow = require('./lib/createWindow.js')
-const {isDev} = require('./lib/env')
-const {distRendererPath} = require('../../webpack/webpack.paths.js')
+const {isDev, isProd} = require('./lib/env')
+
 app.whenReady().then(() => {
-  createWindow({
-    preload: path.join(__dirname, './preload.js'),
-    loadURL: isDev ? 'http://localhost:8080' : path.join(distRendererPath, 'index.html'),
+  let mainWin = new BrowserWindow({
+    width: 300,
+    height: 400,
+    resizable: false,
+    webPreferences: {
+      preload: path.resolve(__dirname, isDev ? 'preload.ts' : 'preload.js'),
+    },
   })
+  mainWin.menuBarVisible = false
+  isDev ? mainWin.loadURL('http://localhost:8080') : mainWin.loadFile(path.join(__dirname, '../renderer/index.html'))
 })

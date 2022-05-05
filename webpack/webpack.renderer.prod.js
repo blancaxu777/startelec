@@ -1,38 +1,30 @@
 const path = require('path')
+const {srcRendererPath, distRendererPath} = require('./webpack.paths')
 const htmlWebpackPlugin = require('html-webpack-plugin')
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
-const {srcRendererPath, distRendererPath, distPath} = require('./webpack.paths')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
+
 module.exports = {
-  entry: path.join(srcRendererPath, 'index.jsx'),
-  mode: 'development',
+  entry: path.join(srcRendererPath, 'index.js'),
+  mode: 'production',
+  target: ['web', 'electron-renderer'],
   output: {
-    filename: '[name].[contenthash:8].js',
+    filename: 'bundle.js',
     path: distRendererPath,
     clean: true,
+    assetModuleFilename: 'assets/[hash][ext][query]',
   },
-  // node: {
-  //   global: true,
-  //   __filename: false,
-  //   __dirname: false,
-  // },
-  target: ['web', 'electron-renderer'],
-  devtool: 'cheap-module-source-map',
-  devServer: {
-    static: distPath,
-  },
+  externalsType: 'script',
   plugins: [
     new htmlWebpackPlugin({
-      env: process.env.NODE_ENV,
-      isBrowser: false,
-      cache: true,
-      inject: 'body',
-      title: 'startElec',
-      template: path.resolve(srcRendererPath, 'index.html'),
+      filename: 'index.html',
+      template: path.join(srcRendererPath, 'index.html'),
     }),
-    new ReactRefreshWebpackPlugin(),
+    new MiniCssExtractPlugin({
+      filename: '[contenthash:8].css',
+    }),
   ],
   resolve: {
-    alias: {},
     extensions: ['.tsx', '.ts', '.jsx', '.js', '.json'],
   },
   module: {
@@ -44,8 +36,9 @@ module.exports = {
           {
             loader: 'babel-loader',
             options: {
-              presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'],
-              plugins: [require.resolve('react-refresh/babel')],
+              cacheDirectory: true,
+              presets: ['@babel/preset-react', '@babel/preset-typescript', '@babel/preset-env'],
+              plugins: [['@babel/plugin-transform-runtime']],
             },
           },
         ],
@@ -54,7 +47,7 @@ module.exports = {
         test: /\.css$/,
         exclude: /node_modules/,
         use: [
-          'style-loader',
+          MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
             options: {
@@ -72,5 +65,9 @@ module.exports = {
         type: 'asset/resource',
       },
     ],
+  },
+  optimization: {
+    minimize: true,
+    minimizer: [new CssMinimizerPlugin()],
   },
 }

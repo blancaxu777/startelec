@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "concurrently \"yarn dev:renderer\" \"wait-on http://localhost:8080 && yarn dev:main\"",
     "dev:main": "cross-env NODE_ENV=development electronmon -r ts-node/register/transpile-only ./src/main/main.ts",
-    "dev:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true npx webpack serve -c ./webpack/webpack.config.renderer.dev.js",
-    "build": "concurrently \"yarn build:main\" \"yarn build:renderer\"",
-    "build:main": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true npx webpack -c ./webpack/webpack.config.main.prod.js",
-    "build:renderer": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true npx webpack -c ./webpack/webpack.config.renderer.prod.js",
+    "dev:renderer": "npx webpack serve -c ./webpack/webpack.renderer.dev.js",
+    "build": "concurrently \"yarn build:main\" \"yarn build:preload\" \"yarn build:renderer\"",
+    "build:main": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true npx webpack -c ./webpack/webpack.main.prod.js",
+    "build:preload": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true npx webpack -c ./webpack/webpack.preload.prod.js",
+    "build:renderer": "npx webpack -c ./webpack/webpack.renderer.prod.js",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "postinstall": "electron-builder install-app-deps"
@@ -48,8 +49,22 @@
   },
   "build": {
     "productName": "startelec",
-    "icon": "build/icon.ico",
+    "icon": "assets/icon.ico",
     "appId": "org.se.Electron",
+    "asar": true,
+    "files": [
+      "dist",
+      "node_modules",
+      "package.json"
+    ],
+    "nsis": {
+      "oneClick": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "startelec"
+    },
     "win": {
       "target": "nsis"
     },

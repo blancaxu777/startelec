@@ -1,35 +1,36 @@
 const path = require('path')
-const {srcRendererPath, distRendererPath} = require('./webpack.paths')
 const htmlWebpackPlugin = require('html-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
-
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
+const {srcRendererPath, distRendererPath, distPath} = require('./webpack.paths')
 module.exports = {
-  entry: path.join(srcRendererPath, 'index.jsx'),
-  mode: 'production',
+  entry: path.join(srcRendererPath, 'index.js'),
+  mode: 'development',
   output: {
     filename: '[name].[contenthash:8].js',
     path: distRendererPath,
     clean: true,
+    assetModuleFilename: 'asset/[hash][ext][query]',
   },
   // node: {
   //   global: true,
   //   __filename: false,
   //   __dirname: false,
   // },
-  target: 'electron-renderer',
+  target: ['web', 'electron-renderer'],
+  devtool: 'cheap-module-source-map',
+  devServer: {
+    static: distPath,
+  },
   plugins: [
     new htmlWebpackPlugin({
+      env: process.env.NODE_ENV,
+      isBrowser: false,
       cache: true,
       inject: 'body',
       title: 'startElec',
-      template: path.join(srcRendererPath, 'index.html'),
-      isBrowser: false,
-      isDevelopment: process.env.NODE_ENV !== 'production',
+      template: path.resolve(srcRendererPath, 'index.html'),
     }),
-    new MiniCssExtractPlugin({
-      filename: 'style.css',
-    }),
+    new ReactRefreshWebpackPlugin(),
   ],
   resolve: {
     alias: {},
@@ -45,6 +46,7 @@ module.exports = {
             loader: 'babel-loader',
             options: {
               presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'],
+              plugins: [require.resolve('react-refresh/babel')],
             },
           },
         ],
@@ -53,7 +55,7 @@ module.exports = {
         test: /\.css$/,
         exclude: /node_modules/,
         use: [
-          MiniCssExtractPlugin.loader,
+          'style-loader',
           {
             loader: 'css-loader',
             options: {
@@ -71,9 +73,5 @@ module.exports = {
         type: 'asset/resource',
       },
     ],
-  },
-  optimization: {
-    minimize: true,
-    minimizer: [new CssMinimizerPlugin()],
   },
 }

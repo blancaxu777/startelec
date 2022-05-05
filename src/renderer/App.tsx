@@ -1,17 +1,18 @@
 import React, {useReducer, useContext} from 'react'
-import {BrowserRouter, Routes, Route} from 'react-router-dom'
+import {MemoryRouter, Routes, Route, Link} from 'react-router-dom'
 import Home from './component/Home/Home'
-import StoreContext from './config/context'
-import {reducer, defaultState} from './config/reducer'
+import StoreContext from './state/context'
+import {reducer, defaultState} from './state/reducer'
+
 const App: React.FC = () => {
   const store = useReducer(reducer, defaultState)
   return (
     <StoreContext.Provider value={store}>
-      <BrowserRouter>
+      <MemoryRouter>
         <Routes>
           <Route path="/" element={<Home />} />
         </Routes>
-      </BrowserRouter>
+      </MemoryRouter>
     </StoreContext.Provider>
   )
 }

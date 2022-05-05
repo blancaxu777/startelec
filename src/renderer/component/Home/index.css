@@ -1,17 +1,28 @@
-.box{
+.box {
   height: 100vh;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
+  background: linear-gradient(to bottom, rgb(241, 100, 18) 49%, #fff 50%, #1499ff 50%);
 }
 .btn {
-  width: 200px;
+  width: 100vw;
   height: 40px;
-  background: rgb(156, 15, 221);
   border-radius: 20px;
   text-align: center;
   line-height: 40px;
   color: #fff;
-  cursor: pointer;
   user-select: none;
+}
+.font_S {
+  display: inline-block;
+  font-size: 30px;
+}
+.font_E {
+  display: inline-block;
+  font-size: 30px;
+}
+.tool{
+  color: #fff;
 }
