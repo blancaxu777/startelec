@@ -46,7 +46,7 @@ module.exports = {
             loader: 'babel-loader',
             options: {
               presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'],
-              plugins: [require.resolve('react-refresh/babel')],
+              plugins: [require.resolve('react-refresh/babel'), '@babel/plugin-transform-runtime'],
             },
           },
         ],
