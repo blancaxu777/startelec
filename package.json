@@ -4,12 +4,13 @@
   "license": "MIT",
   "main": "dist/main/main.js",
   "scripts": {
-    "dev": "concurrently \"yarn dev:renderer\" \"wait-on http://localhost:8080 && yarn dev:main\"",
+    "dev": "concurrently \"yarn dev:preload\" \"yarn dev:renderer\" \"wait-on http://localhost:8080 && yarn dev:main\"",
     "dev:main": "cross-env NODE_ENV=development electronmon -r ts-node/register/transpile-only ./src/main/main.ts",
+    "dev:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack -c ./webpack/webpack.preload.dev.js",
     "dev:renderer": "npx webpack serve -c ./webpack/webpack.renderer.dev.js",
     "build": "concurrently \"yarn build:main\" \"yarn build:preload\" \"yarn build:renderer\"",
     "build:main": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true npx webpack -c ./webpack/webpack.main.prod.js",
-    "build:preload": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true npx webpack -c ./webpack/webpack.preload.prod.js",
+    "build:preload": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true npx webpack -c ./webpack/webpack.preload.dev.js",
     "build:renderer": "npx webpack -c ./webpack/webpack.renderer.prod.js",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
@@ -36,12 +37,14 @@
     "mini-css-extract-plugin": "^2.6.0",
     "react-refresh": "^0.13.0",
     "style-loader": "^3.3.1",
+    "ts-loader": "^9.3.0",
     "ts-node": "^10.7.0",
     "typescript": "^4.6.4",
     "wait-on": "^6.0.1",
     "webpack": "^5.72.0",
     "webpack-cli": "^4.9.2",
-    "webpack-dev-server": "^4.8.1"
+    "webpack-dev-server": "^4.8.1",
+    "webpack-merge": "^5.8.0"
   },
   "dependencies": {
     "react": "^18.1.0",

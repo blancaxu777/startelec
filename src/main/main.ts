@@ -8,7 +8,7 @@ app.whenReady().then(() => {
     height: 400,
     resizable: false,
     webPreferences: {
-      preload: path.resolve(__dirname, isDev ? 'preload.ts' : 'preload.js'),
+      preload: path.resolve(__dirname, isDev ? '../../dist/main/preload.js' : 'preload.js'),
     },
   })
   mainWin.menuBarVisible = false

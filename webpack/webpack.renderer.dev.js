@@ -2,24 +2,24 @@ const path = require('path')
 const htmlWebpackPlugin = require('html-webpack-plugin')
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
 const {srcRendererPath, distRendererPath, distPath} = require('./webpack.paths')
-module.exports = {
+const {merge} = require('webpack-merge')
+const webpackBase = require('./webpack.base')
+module.exports = merge(webpackBase, {
   entry: path.join(srcRendererPath, 'index.js'),
   mode: 'development',
   output: {
-    filename: '[name].[contenthash:8].js',
+    filename: 'renderer.dev.js',
     path: distRendererPath,
     clean: true,
-    assetModuleFilename: 'asset/[hash][ext][query]',
+    library: {
+      type: 'umd',
+    },
   },
-  // node: {
-  //   global: true,
-  //   __filename: false,
-  //   __dirname: false,
-  // },
   target: ['web', 'electron-renderer'],
   devtool: 'cheap-module-source-map',
   devServer: {
     static: distPath,
+    compress: true,
   },
   plugins: [
     new htmlWebpackPlugin({
@@ -32,37 +32,27 @@ module.exports = {
     }),
     new ReactRefreshWebpackPlugin(),
   ],
-  resolve: {
-    alias: {},
-    extensions: ['.tsx', '.ts', '.jsx', '.js', '.json'],
-  },
   module: {
     rules: [
       {
-        test: /\.[jt]sx?$/,
-        exclude: /node_modules/,
-        use: [
-          {
-            loader: 'babel-loader',
-            options: {
-              presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'],
-              plugins: [require.resolve('react-refresh/babel'), '@babel/plugin-transform-runtime'],
-            },
-          },
-        ],
-      },
-      {
         test: /\.css$/,
-        exclude: /node_modules/,
         use: [
           'style-loader',
           {
             loader: 'css-loader',
             options: {
               modules: true,
+              sourceMap: true,
+              importLoaders: 1,
             },
           },
         ],
+        include: /\.module\.css$/,
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
+        exclude: /\.module\.css$/,
       },
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/i,
@@ -74,4 +64,4 @@ module.exports = {
       },
     ],
   },
-}
+})
